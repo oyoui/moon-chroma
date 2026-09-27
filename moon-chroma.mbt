@@ -13,15 +13,15 @@ pub fn Color::new(r : Int, g : Int, b : Int) -> Color {
   { r: clamp(r), g: clamp(g), b: clamp(b) }
 }
 
-// 3. 计算相对亮度
+// 3. 计算相对亮度（严格遵循 WCAG 2.2 / IEC 61966-2-1 标准）
 pub fn Color::luminance(self : Color) -> Double {
   let normalize = fn(channel : Int) -> Double {
     let c = channel.to_double() / 255.0
-    if c <= 0.03928 {
+    if c <= 0.04045 {
       c / 12.92
     } else {
       let base = (c + 0.055) / 1.055
-      base * base * 1.05
+      @math.pow(base, 2.4)
     }
   }
   let r_lum = normalize(self.r)
