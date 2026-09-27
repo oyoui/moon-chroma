@@ -37,7 +37,7 @@ moon test
 Current test result:
 
 ```text
-Total tests: 3, passed: 3, failed: 0.
+Total tests: 6, passed: 6, failed: 0.
 ```
 
 The tests cover the core color model and WCAG contrast calculation logic.
