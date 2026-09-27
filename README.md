@@ -1,35 +1,77 @@
+> **在线体验 Demo**：[https://moon-chroma.netlify.app/](https://moon-chroma.netlify.app/)
+
 # moon-chroma
 
-> A lightweight color space manipulation and accessibility contrast calculation library for MoonBit.
-> 面向 MoonBit 的轻量级 Web 色彩空间转换与无障碍对比度计算库。
+A lightweight color manipulation and WCAG contrast calculation library for MoonBit.
 
-## ✨ 特性 (Features)
+面向 MoonBit 的轻量级色彩处理与 Web 无障碍对比度计算库。
 
-- 🎨 **安全色彩模型**：内置 RGB 强类型约束，提供越界自动纠偏机制。
-- 👁️ **WCAG 2.1 对比度判定**：精准计算相对亮度与双色无障碍阅读对比度（1:1 ~ 21:1）。
-- 🚀 **零依赖 & 极速**：纯 MoonBit 原生实现，易于直接编译为 WebAssembly / JavaScript 供 Web 端调用。
-- ✅ **100% 测试覆盖**：具备完整的单元测试保障。
+## Features
 
-## 🧪 测试验证 (Testing)
+* **RGB color model** — 提供简单的 RGB 颜色数据模型，并对颜色分量进行范围约束。
+* **WCAG 2.1 contrast ratio** — 根据 WCAG 2.1 相对亮度公式计算两个颜色之间的对比度。
+* **Accessibility checking** — 可用于判断前景色与背景色是否具有足够的阅读对比度。
+* **Zero dependencies** — 使用纯 MoonBit 实现，无第三方依赖。
+* **Tested** — 使用 MoonBit 原生测试工具进行功能验证。
 
-本项目使用 MoonBit 原生构建系统进行测试：
+## Example
+
+```moonbit
+let white = Color::new(255, 255, 255)
+let black = Color::new(0, 0, 0)
+
+let ratio = contrast_ratio(white, black)
+println(ratio.to_string())
+```
+
+For black and white, the WCAG contrast ratio is `21.0`.
+
+## Testing
+
+Run the test suite with:
 
 ```bash
 moon test
 ```
 
-输出：
+Current test result:
+
 ```text
 Total tests: 3, passed: 3, failed: 0.
 ```
 
-## 📦 项目规划与排期 (Roadmap)
+The tests cover the core color model and WCAG contrast calculation logic.
 
-- [x] Phase 1: 基础 `Color` 数据模型与 WCAG 对比度算法实现。
-- [ ] Phase 2: 支持 HEX 颜色字符串互转（例如 `#ffffff`）。
-- [ ] Phase 3: 支持 HSL 颜色空间模型与渐变算法。
-- [ ] Phase 4: 提供 Web 端交互 Demo 并在 mooncakes.io 发布 0.1.0 版本。
+## Project Structure
 
-## 📄 License
+```text
+moon-chroma/
+├── moon-chroma.mbt
+├── moon-chroma_test.mbt
+├── moon-chroma_wbtest.mbt
+├── cmd/
+│   └── main/
+├── moon.mod
+└── README.md
+```
+
+## Why?
+
+Color contrast is an important part of accessible interface design.
+
+`moon-chroma` provides a small, dependency-free implementation that can be reused by MoonBit applications and tools that need basic color and accessibility calculations.
+
+## Roadmap
+
+* [x] Basic RGB color model
+* [x] WCAG 2.1 contrast ratio calculation
+* [x] Unit tests
+* [ ] HEX color parsing and formatting
+* [ ] HSL color model
+* [ ] Additional color space conversions
+* [ ] WebAssembly / Web demo
+* [ ] Publish a stable package release
+
+## License
 
 Apache-2.0
