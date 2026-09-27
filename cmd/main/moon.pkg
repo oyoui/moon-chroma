@@ -1,0 +1,5 @@
+// import {
+//   "username/moon-chroma" @lib,
+// }
+
+pkgtype(kind: "executable")
