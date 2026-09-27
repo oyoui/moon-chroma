@@ -1,1 +1,2 @@
-demo/* linguist-documentation
+demo/** linguist-documentation
+moon.mod linguist-detectable=false
