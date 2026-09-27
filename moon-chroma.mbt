@@ -8,13 +8,7 @@ pub struct Color {
 // 2. 构造函数
 pub fn Color::new(r : Int, g : Int, b : Int) -> Color {
   let clamp = fn(v : Int) -> Int {
-    if v < 0 {
-      0
-    } else if v > 255 {
-      255
-    } else {
-      v
-    }
+    if v < 0 { 0 } else if v > 255 { 255 } else { v }
   }
   { r: clamp(r), g: clamp(g), b: clamp(b) }
 }
@@ -43,4 +37,16 @@ pub fn Color::contrast_ratio(self : Color, other : Color) -> Double {
   let lighter = if l1 > l2 { l1 } else { l2 }
   let darker = if l1 > l2 { l2 } else { l1 }
   (lighter + 0.05) / (darker + 0.05)
+}
+
+// 5. 根据对比度判定 WCAG 评级（AAA / AA / Fail）
+pub fn Color::wcag_rating(self : Color, other : Color) -> String {
+  let ratio = self.contrast_ratio(other)
+  if ratio >= 7.0 {
+    "AAA" // 顶级无障碍标准
+  } else if ratio >= 4.5 {
+    "AA"  // 普遍推荐达标标准
+  } else {
+    "Fail" // 对比度过低，文本看不清
+  }
 }
