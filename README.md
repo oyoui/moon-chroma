@@ -1,32 +1,77 @@
-> **在线体验 Demo**：[https://moon-chroma.netlify.app/](https://moon-chroma.netlify.app/)
-
 # moon-chroma
 
 A lightweight color manipulation and WCAG contrast calculation library for MoonBit.
 
 面向 MoonBit 的轻量级色彩处理与 Web 无障碍对比度计算库。
 
-## Features
+## Demo / 在线演示
 
-* **RGB color model** — 提供简单的 RGB 颜色数据模型，并对颜色分量进行范围约束。
-* **WCAG 2.1 contrast ratio** — 根据 WCAG 2.1 相对亮度公式计算两个颜色之间的对比度。
-* **Accessibility checking** — 可用于判断前景色与背景色是否具有足够的阅读对比度。
-* **Zero dependencies** — 使用纯 MoonBit 实现，无第三方依赖。
-* **Tested** — 使用 MoonBit 原生测试工具进行功能验证。
+**https://moon-chroma.netlify.app/**
 
-## Example
+This is an interactive web prototype for visually testing and previewing WCAG contrast calculation results.
+
+The core color manipulation and WCAG contrast calculation library is implemented in MoonBit.
+
+## Features / 功能
+
+* **RGB color model** — Provides a simple `Color` structure with automatic clamping of RGB channels to the `0–255` range.
+* **Relative luminance** — Calculates sRGB relative luminance using the WCAG-recommended transfer function.
+* **WCAG contrast ratio** — Calculates the contrast ratio between two colors, from `1:1` to `21:1`.
+* **WCAG rating** — Classifies contrast results as `AAA`, `AA`, or `Fail`.
+* **Zero third-party dependencies** — Implemented in MoonBit using the standard MoonBit core library.
+* **Unit tested** — Core color and accessibility calculations are covered by MoonBit tests.
+
+## Usage / 使用方法
+
+Create two colors and calculate their contrast ratio:
 
 ```moonbit
-let white = Color::new(255, 255, 255)
-let black = Color::new(0, 0, 0)
+let white = @moon_chroma.Color::new(255, 255, 255)
+let black = @moon_chroma.Color::new(0, 0, 0)
 
-let ratio = contrast_ratio(white, black)
+let ratio = white.contrast_ratio(black)
 println(ratio.to_string())
+
+let rating = white.wcag_rating(black)
+println(rating)
 ```
 
-For black and white, the WCAG contrast ratio is `21.0`.
+For black and white, the WCAG contrast ratio is `21:1` and the rating is `AAA`.
 
-## Testing
+## Color Clamping / 颜色范围限制
+
+RGB channels are automatically clamped to the valid `0–255` range:
+
+```moonbit
+let color = @moon_chroma.Color::new(300, -20, 128)
+```
+
+The resulting color is equivalent to:
+
+```text
+RGB(255, 0, 128)
+```
+
+## WCAG Calculation / WCAG 计算
+
+`moon-chroma` uses the sRGB relative luminance calculation recommended by WCAG:
+
+```text
+if c <= 0.04045:
+    c / 12.92
+else:
+    ((c + 0.055) / 1.055) ^ 2.4
+```
+
+The relative luminance of the RGB channels is then calculated using the standard coefficients:
+
+```text
+0.2126 R + 0.7152 G + 0.0722 B
+```
+
+The contrast ratio is calculated from the relative luminance of the lighter and darker colors.
+
+## Testing / 测试
 
 Run the test suite with:
 
@@ -40,38 +85,48 @@ Current test result:
 Total tests: 6, passed: 6, failed: 0.
 ```
 
-The tests cover the core color model and WCAG contrast calculation logic.
+The test suite covers:
 
-## Project Structure
+* Black and white contrast ratio
+* Identical-color contrast ratio
+* RGB channel clamping
+* WCAG AAA rating
+* WCAG AA rating
+* WCAG Fail rating
+
+## Project Structure / 项目结构
 
 ```text
 moon-chroma/
+├── .github/
+│   └── workflows/
+├── cmd/
+│   └── main/
 ├── moon-chroma.mbt
 ├── moon-chroma_test.mbt
 ├── moon-chroma_wbtest.mbt
-├── cmd/
-│   └── main/
 ├── moon.mod
+├── moon.pkg
+├── AGENTS.md
+├── LICENSE
 └── README.md
 ```
 
-## Why?
+## Roadmap / 路线图
 
-Color contrast is an important part of accessible interface design.
-
-`moon-chroma` provides a small, dependency-free implementation that can be reused by MoonBit applications and tools that need basic color and accessibility calculations.
-
-## Roadmap
-
-* [x] Basic RGB color model
-* [x] WCAG 2.1 contrast ratio calculation
+* [x] RGB color model
+* [x] RGB channel clamping
+* [x] Relative luminance calculation
+* [x] WCAG contrast ratio calculation
+* [x] WCAG accessibility rating
 * [x] Unit tests
+* [x] Interactive web prototype
 * [ ] HEX color parsing and formatting
 * [ ] HSL color model
 * [ ] Additional color space conversions
-* [ ] WebAssembly / Web demo
+* [ ] WebAssembly integration
 * [ ] Publish a stable package release
 
-## License
+## License / 许可证
 
 Apache-2.0

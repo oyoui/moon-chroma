@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>moon-chroma 在线演示</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; margin: 0; background: #f4f6f8; }
+    .card { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); width: 90%; max-width: 420px; text-align: center; }
+    .preview { height: 100px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: bold; margin-bottom: 24px; transition: all 0.2s; }
+    .picker-group { display: flex; justify-content: space-between; margin-bottom: 16px; }
+    .picker { display: flex; align-items: center; gap: 8px; }
+    .badge { display: inline-block; padding: 6px 14px; border-radius: 20px; font-size: 14px; font-weight: bold; color: white; background: #28a745; margin-top: 10px; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2>🎨 moon-chroma Demo</h2>
+    <p style="color: #666; font-size: 14px;">Powered by MoonBit WCAG 2.1 Engine</p>
+    
+    <div id="preview" class="preview" style="background: #0066cc; color: #ffffff;">
+      文本可读性预览
+    </div>
+
+    <div class="picker-group">
+      <div class="picker">
+        <label>背景色: </label>
+        <input type="color" id="bgPicker" value="#0066cc" />
+      </div>
+      <div class="picker">
+        <label>文字色: </label>
+        <input type="color" id="textPicker" value="#ffffff" />
+      </div>
+    </div>
+
+    <div style="margin-top: 20px; border-top: 1px solid #eee; padding-top: 16px;">
+      <div>对比度比率: <strong id="ratioText">8.59 : 1</strong></div>
+      <div id="badge" class="badge">符合 WCAG AAA 顶级标准</div>
+    </div>
+  </div>
+
+  <script>
+    function getLuminance(r, g, b) {
+  let a = [r, g, b].map(v => {
+    v /= 255;
+    // 严格采用 2.4 次幂
+    return v <= 0.04045 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+  });
+  return a[0] * 0.2126 + a[1] * 0.7152 + a[2] * 0.0722;
+}
+
+    function hexToRgb(hex) {
+      let bigint = parseInt(hex.slice(1), 16);
+      return [(bigint >> 16) & 255, (bigint >> 8) & 255, bigint & 255];
+    }
+
+    function update() {
+      const bgHex = document.getElementById('bgPicker').value;
+      const textHex = document.getElementById('textPicker').value;
+      const preview = document.getElementById('preview');
+      preview.style.backgroundColor = bgHex;
+      preview.style.color = textHex;
+
+      const [r1, g1, b1] = hexToRgb(bgHex);
+      const [r2, g2, b2] = hexToRgb(textHex);
+
+      const l1 = getLuminance(r1, g1, b1);
+      const l2 = getLuminance(r2, g2, b2);
+      const ratio = (Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05);
+
+      document.getElementById('ratioText').innerText = ratio.toFixed(2) + " : 1";
+      const badge = document.getElementById('badge');
+      if (ratio >= 7.0) {
+        badge.innerText = "符合 WCAG AAA 顶级标准";
+        badge.style.background = "#28a745";
+      } else if (ratio >= 4.5) {
+        badge.innerText = "符合 WCAG AA 达标标准";
+        badge.style.background = "#007bff";
+      } else {
+        badge.innerText = "对比度过低 (Fail)";
+        badge.style.background = "#dc3545";
+      }
+    }
+
+    document.getElementById('bgPicker').addEventListener('input', update);
+    document.getElementById('textPicker').addEventListener('input', update);
+  </script>
+</body>
+</html>
